@@ -1,0 +1,84 @@
+/*HAVING 절 실습*/
+--1. 부서별 급여 합계 계산 급여 합계가 500이상인 부서만 조회
+--->지금은 이런방식 X
+SELECT DEPT_CODE, SUM(SALARY) AS"급여합계"
+FROM EMPLOYEE2
+WHERE SALARY >=5000000
+GROUP BY dept_code
+ORDER BY "급여합계" DESC;
+
+/*
+ORA-00934: group function is not allowed here
+00934. 00000 -  "group function is not allowed here"
+
+->WHERE 절에서는 집계 함수(SUM,AVG,MAX,MIN,COUNT 등)
+        사용할 수 없음
+집계 함수(SUM,AVG,MAX,MIN,COUNT 등) 는 HAVING이나 WHERE GROUP      
+*/
+--2. 각 부서별 최대 급여 조회
+SELECT DEPT_CODE,MAX(SALARY)AS"최대급여"
+FROM EMPLOYEE2
+GROUP BY DEPT_CODE;
+
+--3. 각 부서별 최소 급여 조회 최소급여를 기준으로 오름차순으로 정렬
+SELECT DEPT_CODE,MIN(SALARY)AS"최소급여"
+FROM EMPLOYEE2
+GROUP BY DEPT_CODE
+ORDER BY "최소급여" ASC;
+
+--4. 각 부서별 보너스율 합계 조회
+--SUM 총 보너스율 기준으로 내림차순
+SELECT DEPT_CODE,SUM(BONUS)AS"보너스"
+FROM EMPLOYEE2
+GROUP BY DEPT_CODE
+ORDER BY "보너스" DESC;
+
+--5. 직급별 사원 수 조회
+-- COUNT 사원수 기준으로 내림차순
+SELECT JOB_CODE, COUNT(*)AS"사원수"
+FROM EMPLOYEE2
+GROUP BY JOB_CODE
+ORDER BY "사원수" DESC;
+
+SELECT SAL_LEVEL,AVG(BONUS)AS"평균보너스율"
+FROM EMPLOYEE2
+GROUP BY SAL_LEVEL
+ORDER BY "평균보너스율" DESC;
+/*
+ORA-00904: "SAL_LEVE": invalid identifier
+오타가 났을 때 오타를 빠르게 찾는 방법
+문제가 되는 구문을 복사
+CTRL+F 누르고 CTRL+V로 붙여넣기 한 다음
+문제가되는 구문 찾기(오타찾기)
+*/
+
+SELECT DEPT_CODE,MIN(HIRE_DATE)AS"가장오래된사원"
+FROM EMPLOYEE2
+GROUP BY DEPT_CODE
+ORDER BY "가장오래된사원" ASC;
+
+SELECT DEPT_CODE,COUNT(*)AS"사원수"
+FROM EMPLOYEE2
+WHERE SALARY >=3000000
+GROUP BY DEPT_CODE
+ORDER BY "사원수" DESC;
+
+--9.부서별 보너스율 0.1이상인 사원수 조회
+--COUNT AS"보너스 받은 사원수"
+SELECT DEPT_CODE,COUNT(*)AS"보너스받은사원수"
+FROM EMPLOYEE2
+WHERE BONUS >= 0.1
+GROUP BY DEPT_CODE
+ORDER BY "보너스받은사원수" DESC;
+
+SELECT JOB_CODE,COUNT(*)AS"사원수"
+FROM EMPLOYEE2
+WHERE SALARY <4000000
+GROUP BY JOB_CODE
+ORDER BY "사원수" DESC;
+
+SELECT DEPT_CODE, AVG(SALARY)AS"평균급여"
+FROM EMPLOYEE2
+WHERE SALARY>=5000000
+GROUP BY DEPT_CODE
+ORDER BY "평균급여" DESC;
