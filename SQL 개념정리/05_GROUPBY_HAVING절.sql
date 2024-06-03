@@ -79,3 +79,139 @@ SELECT DEPT_CODE,FLOOR(AVG(SALARY))AS"평균급여"
 FROM EMPLOYEE2
 WHERE DEPT_CODE IN('D5','D6')
 GROUP BY DEPT_CODE;
+
+--여러 컬러를 묶어서 그룹으로 지정 가능
+
+--GROUP BY 사용시 주의할점
+
+-->SELECT문에 GROUP BY 절을 사용한 경우
+
+
+
+
+SELECT DEPT_CODE,JOB_CODE,SUM(SALARY)
+FROM EMPLOYEE2
+GROUP BY DEPT_CODE,JOB_CODE
+ORDER BY DEPT_CODE;
+
+-----------------------------------------------------------
+--WHERE 절 : 지정된 테이블에서 어떤 행만을 조회 결과로 삼을 것인지 조정을 지정하는 구문
+--          (테이블 내에서 특정 컬럼만 뽑아서 사용하겠다는 조건문)
+
+--HAVING 절 : 그룹 함수로 구해 올 그룹에 대한 조건을 설정할 때 사용
+--          (그룹에 대한 조건, 어떤 그룹만 조회하겠다)
+
+--부서별 평균 급여가 3000000원 이상인 사원만 조회하고 오름차순 정렬
+--> 급여가 3000000원 이상인 지원들만 대상으로 각 부서의 평균 급여계산
+SELECT DEPT_CODE,AVG(SALARY)
+FROM EMPLOYEE2
+WHERE SALARY >=3000000
+GROUP BY DEPT_CODE
+ORDER BY DEPT_CODE;
+--부서별 평균 급여가 3000000원 이상인 부서를 조회하고 부서코드 오름차순 정렬
+SELECT DEPT_CODE,AVG(SALARY)
+FROM EMPLOYEE2
+--WHERE SALARY >=3000000;
+GROUP BY DEPT_CODE
+HAVING AVG(SALARY) >=3000000
+ORDER BY DEPT_CODE;
+
+/*
+D6	3366666.66666666666666666666666666666667
+D9	5900000
+
+WHERE절의 경우 조건에 맞는 값만 가지고 온 후 보여준다면
+HAVING절은 
+*/
+
+--집계함수(ROLLUP,CUBE)
+--그룹 별 산출한 결과 값의 집계를 계산하는 함수
+--GROUP BY 절에서만 작성할 수 있는 함수
+--WHERE ORDER SELECT에서 사용하지 않고 GROUP BY에서 작성
+
+--ROLLUP함수: 그룹별로 중간 집계를 처리하는 함수
+--그룹별로 묶여진 값에 대한 '중간 집계'와 '총 집계'를 계산해서 자동으로 추가하는 함수
+-- *인자로 전달받은 그룹중에서 가장 먼저 지정한 그룹별 한계와 총 합계를 구하는 함수
+
+--EMPLOYEE 테이블에서
+--각 부서에 소속된 직급 별 급여합
+--부서별 급여 합
+--전체 직원 급여 총합 조회
+
+SELECT DEPT_CODE,JOB_CODE,SUM(SALARY)
+FROM EMPLOYEE2
+GROUP BY ROLLUP(DEPT_CODE,JOB_CODE)
+ORDER BY DEPT_CODE;
+/*
+--> employee 테이블에서 DEPT_CODE와 JOB_CODE 기준으로 SALARY 함께 구함
+특정그룹의 합계 전체
+부서코드가 동일한 모든 행의 합계
+그룹의 합계
+부서 직급 월급일
+D1	J6	6440000 <-- D1 부서의 J6 직급 급여 합계
+D1	J7	1380000 <-- D1 부서의 J7 직급 급여 합계
+D1		7820000 <-- D1 부서 전체의 급여 합계
+D2	J4	6520000<-- D2 부서의 J7 직급 급여 합계
+D2		6520000<-- D2 부서의 J7 직급 급여 합계
+D5	J3	3500000<-- D5 부서의 J7 직급 급여 합계
+D5	J5	8460000<-- D5 부서의 J7 직급 급여 합계
+D5	J7	3800000<-- D5 부서의 J7 직급 급여 합계
+D5		15760000<-- D5 부서의 J7 직급 급여 합계
+D6	J3	7300000<-- D6 부서의 J7 직급 급여 합계
+D6	J4	2800000
+D6		10100000
+D8	J6	6986240
+D8		6986240
+D9	J1	8000000
+D9	J2	9700000
+D9		17700000
+	J6	2320000
+	J7	2890000
+		5210000
+        
+카페 
+빠나쁘레소 아메리카노 총매출
+        카페라떼 총매출
+        아메리카노 
+*/
+
+
+--CUBE 함수 : 그룹별 산출한 결과를 집계하는 함수
+-- 
+SELECT DEPT_CODE,JOB_CODE,SUM(SALARY)
+FROM EMPLOYEE2
+GROUP BY CUBE(DEPT_CODE,JOB_CODE)
+ORDER BY DEPT_CODE;
+/*
+CUBE는 ROLLUP보다 더 포괄적인 집계 결과 생성
+CUBE는 모든 가능한 모든 것을 조합하고 조합에 해당 결과와 총하
+D1	J6	6440000
+D1	J7	1380000
+D1		7820000
+D2	J4	6520000
+D2		6520000
+D5	J3	3500000
+D5	J5	8460000
+D5	J7	3800000
+D5		15760000
+D6	J3	7300000
+D6	J4	2800000
+D6		10100000
+D8	J6	6986240
+D8		6986240
+D9	J1	8000000
+D9	J2	9700000
+D9		17700000
+
+	J1	8000000
+	J2	9700000
+	J3	10800000
+	J4	9320000
+	J5	8460000
+	J6	2320000
+	J6	15746240
+	J7	2890000
+	J7	8070000
+  */ 
+  
+--UNION INTERSECT MINUS
